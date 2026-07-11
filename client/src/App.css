@@ -1,0 +1,98 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5fff5;
+}
+
+nav {
+  background: #2e7d32;
+  padding: 15px;
+}
+
+.home {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.home h1 {
+  color: #2e7d32;
+  font-size: 42px;
+}
+
+.home p {
+  font-size: 20px;
+  color: #555;
+}
+
+.buttons {
+  margin-top: 30px;
+}
+
+.buttons button {
+  margin: 10px;
+  padding: 12px 28px;
+  font-size: 18px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.buttons button:hover {
+  background: #1b5e20;
+}
+
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  width: 250px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.form-container {
+  width: 350px;
+  margin: 60px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+  text-align: center;
+  color: #2e7d32;
+}
+
+.form-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container input {
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.form-container button {
+  padding: 12px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form-container button:hover {
+  background: #1b5e20;
+}
