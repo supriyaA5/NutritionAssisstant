@@ -12,11 +12,58 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Helper function to safely URL-encode the password in the connection string
+const encodeMongoUriPassword = (uri) => {
+  if (!uri || typeof uri !== "string") return uri;
+
+  const parts = uri.split("://");
+  if (parts.length !== 2) return uri;
+  const protocol = parts[0] + "://";
+  const remainder = parts[1];
+
+  const hostEndIndex = remainder.search(/[\/\?]/);
+  const authority = hostEndIndex === -1 ? remainder : remainder.substring(0, hostEndIndex);
+  const pathAndQuery = hostEndIndex === -1 ? "" : remainder.substring(hostEndIndex);
+
+  const atIndex = authority.lastIndexOf("@");
+  if (atIndex === -1) return uri;
+
+  const auth = authority.substring(0, atIndex);
+  const host = authority.substring(atIndex + 1);
+
+  const colonIndex = auth.indexOf(":");
+  if (colonIndex === -1) return uri;
+
+  const username = auth.substring(0, colonIndex);
+  const password = auth.substring(colonIndex + 1);
+
+  const specialChars = /[!@#$%^&*(),.?":{}|<>+=\/]/;
+  
+  let isAlreadyEncoded = false;
+  if (password.includes("%")) {
+    try {
+      isAlreadyEncoded = decodeURIComponent(password) !== password;
+    } catch (e) {
+      isAlreadyEncoded = false;
+    }
+  }
+
+  if (specialChars.test(password) && !isAlreadyEncoded) {
+    console.log("ℹ️ Auto-encoding special characters in MONGO_URI password...");
+    const encodedPassword = encodeURIComponent(password);
+    return `${protocol}${username}:${encodedPassword}@${host}${pathAndQuery}`;
+  }
+
+  return uri;
+};
+
 // 👉 MONGODB CODE GOES HERE
 let mongoUri = process.env.MONGO_URI;
 if (!mongoUri || mongoUri.trim() === "" || mongoUri.includes("<your") || mongoUri.includes("connection string")) {
-  console.warn("⚠️  Warning: MONGO_URI in server/.env is not configured. Falling back to local MongoDB: mongodb://127.0.0.1:27017/nutrition_assistant");
+  console.warn("⚠️  Warning: MONGO_URI in environment is not configured. Falling back to local MongoDB: mongodb://127.0.0.1:27017/nutrition_assistant");
   mongoUri = "mongodb://127.0.0.1:27017/nutrition_assistant";
+} else {
+  mongoUri = encodeMongoUriPassword(mongoUri);
 }
 
 mongoose.connect(mongoUri)
@@ -28,9 +75,8 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
 
 // POST API (SAVE FOOD)
